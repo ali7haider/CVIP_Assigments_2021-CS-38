@@ -2,7 +2,7 @@ import sys
 import cv2
 from PyQt5.QtWidgets import QApplication, QMainWindow, QFileDialog, QSizePolicy
 from PyQt5.QtCore import Qt, QTimer
-from PyQt5.QtGui import QPixmap, QImage
+from PyQt5.QtGui import QPixmap, QImage,QIcon
 from main_ui import Ui_MainWindow  # Import the generated class
 
 class MainWindow(QMainWindow, Ui_MainWindow):
@@ -26,18 +26,21 @@ class MainWindow(QMainWindow, Ui_MainWindow):
 
         # Connect the btnBrowse button to open file dialog
         self.btnBrowse.clicked.connect(self.open_file_dialog)
+
+        # Connect the btnPlayPause button to toggle play/pause
+        self.btnPlayPause.clicked.connect(self.toggle_play_pause)
     
-        self.videoLabel.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Expanding)
+        self.videoLabel.setSizePolicy(QSizePolicy.Ignored, QSizePolicy.Ignored)
         self.videoLabel.setAlignment(Qt.AlignCenter)
-
-
-
 
         # Initialize video player variables
         self.video_file_path = None
         self.cap = None
         self.timer = QTimer(self)
         self.timer.timeout.connect(self.update_frame)
+
+        # Variable to track play/pause state
+        self.playing = False
 
     def open_file_dialog(self):
         options = QFileDialog.Options()
@@ -72,8 +75,6 @@ class MainWindow(QMainWindow, Ui_MainWindow):
             # Set the scaled QPixmap to the QLabel
             self.videoLabel.setPixmap(scaled_pixmap)
 
-
-
     def convert_cv_to_pixmap(self, frame):
         rgb_frame = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)  # Convert BGR to RGB
         h, w, ch = rgb_frame.shape
@@ -86,6 +87,21 @@ class MainWindow(QMainWindow, Ui_MainWindow):
             self.showNormal()
         else:
             self.showMaximized()
+
+    def toggle_play_pause(self):
+        if self.playing:
+            # Pause the video
+            self.timer.stop()
+            self.playing = False
+            # Change button icon to play
+            self.btnPlayPause.setIcon(QIcon(":/icons/images/icons/cil-media-play.png"))
+        else:
+            # Play the video
+            self.timer.start(33)  # Update frame every ~33 milliseconds (about 30 frames per second)
+            self.playing = True
+            # Change button icon to pause
+            self.btnPlayPause.setIcon(QIcon(":/icons/images/icons/cil-media-pause.png"))
+
 
 if __name__ == "__main__":
     app = QApplication(sys.argv)
