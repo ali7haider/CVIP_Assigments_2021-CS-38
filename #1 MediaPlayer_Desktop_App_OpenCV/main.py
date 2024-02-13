@@ -1,9 +1,10 @@
 import sys
 import cv2
-from PyQt5.QtWidgets import QApplication, QMainWindow, QFileDialog, QSizePolicy, QLabel
+from PyQt5.QtWidgets import QApplication, QMainWindow, QFileDialog, QSizePolicy, QLabel, QProgressBar
 from PyQt5.QtCore import Qt, QTimer
 from PyQt5.QtGui import QPixmap, QImage, QIcon
 from main_ui import Ui_MainWindow  # Import the generated class
+from datetime import timedelta
 
 class MainWindow(QMainWindow, Ui_MainWindow):
     def __init__(self):
@@ -61,6 +62,15 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         # Variable to track playback speed
         self.speed = 1.0
 
+       
+
+    def update_progress_bar(self):
+        if self.cap is not None and self.cap.isOpened():
+            total_frames = self.cap.get(cv2.CAP_PROP_FRAME_COUNT)
+            current_frame = self.cap.get(cv2.CAP_PROP_POS_FRAMES)
+            progress_percentage = (current_frame / total_frames) * 100
+            self.videoPrograssBar.setValue(progress_percentage)
+  
     def open_file_dialog(self):
         options = QFileDialog.Options()
         file_name, _ = QFileDialog.getOpenFileName(self, "Open Video File", "", "Video Files (*.mp4 *.avi *.mov *.mkv *.wmv)", options=options)
@@ -70,6 +80,15 @@ class MainWindow(QMainWindow, Ui_MainWindow):
             self.play_video()
             self.display_message("Video loaded successfully.")
 
+            # Get total duration of the video
+            if self.cap is not None and self.cap.isOpened():
+                total_frames = self.cap.get(cv2.CAP_PROP_FRAME_COUNT)
+                fps = self.cap.get(cv2.CAP_PROP_FPS)
+                total_seconds = total_frames / fps
+                total_time = str(timedelta(seconds=total_seconds))
+                self.lblTotalTime.setText(total_time)
+
+  
     def play_video(self):
         if self.video_file_path is not None:
             self.cap = cv2.VideoCapture(self.video_file_path)
@@ -88,12 +107,24 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         if ret:
             # Convert the frame to QPixmap
             pixmap = self.convert_cv_to_pixmap(frame)
-            
+    
             # Scale the QPixmap to fit the QLabel while maintaining aspect ratio
             scaled_pixmap = pixmap.scaled(self.videoLabel.size(), Qt.KeepAspectRatio, Qt.SmoothTransformation)
-            
+    
             # Set the scaled QPixmap to the QLabel
             self.videoLabel.setPixmap(scaled_pixmap)
+    
+            # Update progress bar
+            self.update_progress_bar()
+    
+            # Update running time
+            if self.cap.isOpened():
+                current_frame = self.cap.get(cv2.CAP_PROP_POS_FRAMES)
+                fps = self.cap.get(cv2.CAP_PROP_FPS)
+                current_seconds = current_frame / fps
+                current_time = str(timedelta(seconds=current_seconds)).split('.', 1)[0]  # Remove milliseconds
+                self.lblRunningTime.setText(current_time)
+
 
     def convert_cv_to_pixmap(self, frame):
         rgb_frame = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)  # Convert BGR to RGB
