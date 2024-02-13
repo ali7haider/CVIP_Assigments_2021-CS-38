@@ -61,6 +61,8 @@ class MainWindow(QMainWindow, Ui_MainWindow):
 
         # Variable to track playback speed
         self.speed = 1.0
+        self.videoPrograssBar.mousePressEvent = self.change_video_position
+
 
        
 
@@ -199,6 +201,15 @@ class MainWindow(QMainWindow, Ui_MainWindow):
 
     def clear_message(self):
         self.message.clear()
+    def change_video_position(self, event):
+        # Calculate the new position based on the mouse click event
+        new_position = (event.pos().x() / self.videoPrograssBar.width()) * 100
+
+        # Set the new position in the video
+        if self.cap is not None and self.cap.isOpened():
+            total_frames = self.cap.get(cv2.CAP_PROP_FRAME_COUNT)
+            new_frame = (new_position / 100) * total_frames
+            self.cap.set(cv2.CAP_PROP_POS_FRAMES, new_frame)
 
 
 if __name__ == "__main__":
