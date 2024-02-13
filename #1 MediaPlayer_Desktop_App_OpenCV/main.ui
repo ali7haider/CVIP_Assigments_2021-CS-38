@@ -2713,7 +2713,10 @@ p, li { white-space: pre-wrap; }
                  </widget>
                 </item>
                 <item>
-                 <widget class="QLabel" name="version">
+                 <widget class="QLabel" name="message">
+                  <property name="styleSheet">
+                   <string notr="true">color:white;</string>
+                  </property>
                   <property name="text">
                    <string/>
                   </property>

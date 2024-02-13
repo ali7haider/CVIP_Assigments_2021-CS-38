@@ -1,6 +1,6 @@
 import sys
 import cv2
-from PyQt5.QtWidgets import QApplication, QMainWindow, QFileDialog, QSizePolicy
+from PyQt5.QtWidgets import QApplication, QMainWindow, QFileDialog, QSizePolicy, QLabel
 from PyQt5.QtCore import Qt, QTimer
 from PyQt5.QtGui import QPixmap, QImage, QIcon
 from main_ui import Ui_MainWindow  # Import the generated class
@@ -38,7 +38,14 @@ class MainWindow(QMainWindow, Ui_MainWindow):
 
         # Connect the btnEnd button to end the video
         self.btnEnd.clicked.connect(self.end_video)
-    
+
+        # Connect the btnDecreaseSpeed button to decrease speed
+        self.btnDecreaseSpeed.clicked.connect(self.decrease_speed)
+
+        # Connect the btnIncreaseSpeed button to increase speed
+        self.btnIncreaseSpeed.clicked.connect(self.increase_speed)
+
+        # Initialize videoLabel size policy and alignment
         self.videoLabel.setSizePolicy(QSizePolicy.Ignored, QSizePolicy.Ignored)
         self.videoLabel.setAlignment(Qt.AlignCenter)
 
@@ -51,6 +58,9 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         # Variable to track play/pause state
         self.playing = False
 
+        # Variable to track playback speed
+        self.speed = 1.0
+
     def open_file_dialog(self):
         options = QFileDialog.Options()
         file_name, _ = QFileDialog.getOpenFileName(self, "Open Video File", "", "Video Files (*.mp4 *.avi *.mov *.mkv *.wmv)", options=options)
@@ -58,6 +68,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
             self.video_file_path = file_name
             self.txtBrowsePath.setText(file_name)
             self.play_video()
+            self.display_message("Video loaded successfully.")
 
     def play_video(self):
         if self.video_file_path is not None:
@@ -104,18 +115,21 @@ class MainWindow(QMainWindow, Ui_MainWindow):
             self.playing = False
             # Change button icon to play
             self.btnPlayPause.setIcon(QIcon(":/icons/images/icons/cil-media-play.png"))
+            self.display_message("Video paused.")
         else:
             # Play the video
             self.timer.start(33)  # Update frame every ~33 milliseconds (about 30 frames per second)
             self.playing = True
             # Change button icon to pause
             self.btnPlayPause.setIcon(QIcon(":/icons/images/icons/cil-media-pause.png"))
+            self.display_message("Video resumed.")
 
     def step_backward(self):
         if self.cap is not None and self.cap.isOpened():
             current_position = self.cap.get(cv2.CAP_PROP_POS_MSEC)
             new_position = max(0, current_position - 4000)  # Step back 4 seconds
             self.cap.set(cv2.CAP_PROP_POS_MSEC, new_position)
+            self.display_message("Stepped backward 4 seconds.")
 
     def step_upward(self):
         if self.cap is not None and self.cap.isOpened():
@@ -123,12 +137,37 @@ class MainWindow(QMainWindow, Ui_MainWindow):
             duration = self.cap.get(cv2.CAP_PROP_FRAME_COUNT) / self.cap.get(cv2.CAP_PROP_FPS) * 1000
             new_position = min(duration, current_position + 4000)  # Step forward 4 seconds
             self.cap.set(cv2.CAP_PROP_POS_MSEC, new_position)
+            self.display_message("Stepped forward 4 seconds.")
 
     def end_video(self):
         if self.cap is not None and self.cap.isOpened():
             self.timer.stop()
             self.cap.set(cv2.CAP_PROP_POS_FRAMES, 0)
-            self.btnPlayPause.setIcon(QIcon(":/icons/images/icons/cil-media-play.png"))
+            self.display_message("Video ended. Returned to the beginning.")
+
+    def decrease_speed(self):
+        self.speed = max(0.1, self.speed - 0.1)
+        if self.cap is not None:
+            # Decrease playback speed by reducing frame rate
+            self.cap.set(cv2.CAP_PROP_FPS, self.cap.get(cv2.CAP_PROP_FPS) * self.speed)
+            self.display_message(f"Playback speed decreased to {self.speed:.2f}x.")
+    
+    def increase_speed(self):
+        self.speed += 0.1
+        if self.cap is not None:
+            # Increase playback speed by increasing frame rate
+            self.cap.set(cv2.CAP_PROP_FPS, self.cap.get(cv2.CAP_PROP_FPS) * self.speed)
+            self.display_message(f"Playback speed increased to {self.speed:.2f}x.")
+
+
+
+
+    def display_message(self, message):
+        self.message.setText(message)
+        QTimer.singleShot(10000, self.clear_message)
+
+    def clear_message(self):
+        self.message.clear()
 
 
 if __name__ == "__main__":
