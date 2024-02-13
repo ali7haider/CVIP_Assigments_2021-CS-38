@@ -2,7 +2,7 @@ import sys
 import cv2
 from PyQt5.QtWidgets import QApplication, QMainWindow, QFileDialog, QSizePolicy
 from PyQt5.QtCore import Qt, QTimer
-from PyQt5.QtGui import QPixmap, QImage,QIcon
+from PyQt5.QtGui import QPixmap, QImage, QIcon
 from main_ui import Ui_MainWindow  # Import the generated class
 
 class MainWindow(QMainWindow, Ui_MainWindow):
@@ -29,6 +29,15 @@ class MainWindow(QMainWindow, Ui_MainWindow):
 
         # Connect the btnPlayPause button to toggle play/pause
         self.btnPlayPause.clicked.connect(self.toggle_play_pause)
+
+        # Connect the btnStepBackward button to step backward
+        self.btnStepBackward.clicked.connect(self.step_backward)
+
+        # Connect the btnStepUpward button to step upward
+        self.btnStepUpward.clicked.connect(self.step_upward)
+
+        # Connect the btnEnd button to end the video
+        self.btnEnd.clicked.connect(self.end_video)
     
         self.videoLabel.setSizePolicy(QSizePolicy.Ignored, QSizePolicy.Ignored)
         self.videoLabel.setAlignment(Qt.AlignCenter)
@@ -101,6 +110,25 @@ class MainWindow(QMainWindow, Ui_MainWindow):
             self.playing = True
             # Change button icon to pause
             self.btnPlayPause.setIcon(QIcon(":/icons/images/icons/cil-media-pause.png"))
+
+    def step_backward(self):
+        if self.cap is not None and self.cap.isOpened():
+            current_position = self.cap.get(cv2.CAP_PROP_POS_MSEC)
+            new_position = max(0, current_position - 4000)  # Step back 4 seconds
+            self.cap.set(cv2.CAP_PROP_POS_MSEC, new_position)
+
+    def step_upward(self):
+        if self.cap is not None and self.cap.isOpened():
+            current_position = self.cap.get(cv2.CAP_PROP_POS_MSEC)
+            duration = self.cap.get(cv2.CAP_PROP_FRAME_COUNT) / self.cap.get(cv2.CAP_PROP_FPS) * 1000
+            new_position = min(duration, current_position + 4000)  # Step forward 4 seconds
+            self.cap.set(cv2.CAP_PROP_POS_MSEC, new_position)
+
+    def end_video(self):
+        if self.cap is not None and self.cap.isOpened():
+            self.timer.stop()
+            self.cap.set(cv2.CAP_PROP_POS_FRAMES, 0)
+            self.btnPlayPause.setIcon(QIcon(":/icons/images/icons/cil-media-play.png"))
 
 
 if __name__ == "__main__":
