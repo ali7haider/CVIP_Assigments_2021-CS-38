@@ -1597,7 +1597,7 @@ p, li { white-space: pre-wrap; }
                        <number>0</number>
                       </property>
                       <item>
-                       <widget class="QPushButton" name="maximizeRestoreAppBtn_6">
+                       <widget class="QPushButton" name="btnVideo">
                         <property name="minimumSize">
                          <size>
                           <width>100</width>
@@ -1645,7 +1645,7 @@ p, li { white-space: pre-wrap; }
                        </widget>
                       </item>
                       <item>
-                       <widget class="QComboBox" name="comboBox_3">
+                       <widget class="QComboBox" name="cmbxCamera">
                         <property name="maximumSize">
                          <size>
                           <width>200</width>
@@ -1690,6 +1690,12 @@ p, li { white-space: pre-wrap; }
                       <property name="spacing">
                        <number>20</number>
                       </property>
+                      <property name="leftMargin">
+                       <number>0</number>
+                      </property>
+                      <property name="rightMargin">
+                       <number>0</number>
+                      </property>
                       <item>
                        <widget class="QFrame" name="rightButtons_5">
                         <property name="minimumSize">
@@ -1721,7 +1727,7 @@ p, li { white-space: pre-wrap; }
                           <number>0</number>
                          </property>
                          <item>
-                          <widget class="QLineEdit" name="lineEdit">
+                          <widget class="QLineEdit" name="txtBrowsePath">
                            <property name="minimumSize">
                             <size>
                              <width>0</width>
@@ -1730,15 +1736,18 @@ p, li { white-space: pre-wrap; }
                            </property>
                            <property name="styleSheet">
                             <string notr="true">
-#lineEdit {
+#txtBrowsePath {
     background-color: rgb(255, 255, 255);
     color: rgb(0, 0, 0);
     border: 1px solid transparent;  /* Initially, set a transparent border */
 }
 
-#lineEdit:focus {
+#txtBrowsePath:focus {
     border: 2px solid rgb(85, 170, 255);  /* Change the border color when the button is focused/clicked */
 }</string>
+                           </property>
+                           <property name="readOnly">
+                            <bool>true</bool>
                            </property>
                            <property name="placeholderText">
                             <string>Browse Path</string>
@@ -1746,7 +1755,7 @@ p, li { white-space: pre-wrap; }
                           </widget>
                          </item>
                          <item>
-                          <widget class="QPushButton" name="closeAppBtn_4">
+                          <widget class="QPushButton" name="btnBrowse">
                            <property name="minimumSize">
                             <size>
                              <width>100</width>
@@ -1825,7 +1834,7 @@ p, li { white-space: pre-wrap; }
                          <enum>QFrame::StyledPanel</enum>
                         </property>
                         <property name="frameShadow">
-                         <enum>QFrame::Sunken</enum>
+                         <enum>QFrame::Raised</enum>
                         </property>
                         <layout class="QHBoxLayout" name="horizontalLayout_26">
                          <property name="spacing">
@@ -1884,7 +1893,7 @@ p, li { white-space: pre-wrap; }
                           <number>0</number>
                          </property>
                          <property name="topMargin">
-                          <number>5</number>
+                          <number>10</number>
                          </property>
                          <property name="rightMargin">
                           <number>0</number>
@@ -1958,7 +1967,7 @@ p, li { white-space: pre-wrap; }
                              <number>0</number>
                             </property>
                             <item alignment="Qt::AlignLeft">
-                             <widget class="QProgressBar" name="progressBar_3">
+                             <widget class="QProgressBar" name="volumeProgressBar">
                               <property name="maximumSize">
                                <size>
                                 <width>200</width>
@@ -2043,7 +2052,7 @@ p, li { white-space: pre-wrap; }
                                 <number>0</number>
                                </property>
                                <item>
-                                <widget class="QPushButton" name="minimizeAppBtn_10">
+                                <widget class="QPushButton" name="btnPlayPause">
                                  <property name="minimumSize">
                                   <size>
                                    <width>28</width>
@@ -2117,7 +2126,7 @@ p, li { white-space: pre-wrap; }
                                 <number>0</number>
                                </property>
                                <item>
-                                <widget class="QPushButton" name="minimizeAppBtn_11">
+                                <widget class="QPushButton" name="btnStepBackward">
                                  <property name="minimumSize">
                                   <size>
                                    <width>28</width>
@@ -2152,7 +2161,7 @@ p, li { white-space: pre-wrap; }
                                 </widget>
                                </item>
                                <item>
-                                <widget class="QPushButton" name="minimizeAppBtn_12">
+                                <widget class="QPushButton" name="btnEnd">
                                  <property name="minimumSize">
                                   <size>
                                    <width>28</width>
@@ -2187,7 +2196,7 @@ p, li { white-space: pre-wrap; }
                                 </widget>
                                </item>
                                <item>
-                                <widget class="QPushButton" name="minimizeAppBtn_13">
+                                <widget class="QPushButton" name="btnStepUpward">
                                  <property name="minimumSize">
                                   <size>
                                    <width>28</width>
@@ -2261,7 +2270,7 @@ p, li { white-space: pre-wrap; }
                                 <number>0</number>
                                </property>
                                <item>
-                                <widget class="QPushButton" name="minimizeAppBtn_7">
+                                <widget class="QPushButton" name="btnDecreaseSpeed">
                                  <property name="minimumSize">
                                   <size>
                                    <width>28</width>
@@ -2296,7 +2305,7 @@ p, li { white-space: pre-wrap; }
                                 </widget>
                                </item>
                                <item>
-                                <widget class="QPushButton" name="minimizeAppBtn_8">
+                                <widget class="QPushButton" name="btnIncreaseSpeed">
                                  <property name="minimumSize">
                                   <size>
                                    <width>28</width>
@@ -2370,7 +2379,7 @@ p, li { white-space: pre-wrap; }
                                 <number>0</number>
                                </property>
                                <item>
-                                <widget class="QPushButton" name="minimizeAppBtn_19">
+                                <widget class="QPushButton" name="btnSetting">
                                  <property name="minimumSize">
                                   <size>
                                    <width>28</width>
