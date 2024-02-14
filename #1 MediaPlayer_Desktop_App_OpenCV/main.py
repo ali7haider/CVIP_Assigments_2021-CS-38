@@ -4,6 +4,7 @@ from PyQt5.QtWidgets import QApplication, QMainWindow, QFileDialog, QSizePolicy,
 from PyQt5.QtCore import Qt, QTimer
 from PyQt5.QtGui import QPixmap, QImage, QIcon
 from main_ui import Ui_MainWindow  # Import the generated class
+from setting import SettingWindow
 from datetime import timedelta
 
 class MainWindow(QMainWindow, Ui_MainWindow):
@@ -50,6 +51,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self.videoLabel.setSizePolicy(QSizePolicy.Ignored, QSizePolicy.Ignored)
         self.videoLabel.setAlignment(Qt.AlignCenter)
 
+
         # Initialize video player variables
         self.video_file_path = None
         self.cap = None
@@ -63,8 +65,13 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         self.speed = 1.0
         self.videoPrograssBar.mousePressEvent = self.change_video_position
 
+        self.btnSetting.clicked.connect(self.settingWindow)
 
        
+    def settingWindow(self):
+        print('Ali')
+        self.setting_window = SettingWindow(self)
+        self.setting_window.show()
 
     def update_progress_bar(self):
         if self.cap is not None and self.cap.isOpened():
@@ -177,6 +184,8 @@ class MainWindow(QMainWindow, Ui_MainWindow):
             self.timer.stop()
             self.cap.set(cv2.CAP_PROP_POS_FRAMES, 0)
             self.display_message("Video ended. Returned to the beginning.")
+            self.btnPlayPause.setIcon(QIcon(":/icons/images/icons/cil-media-play.png"))
+
 
     def decrease_speed(self):
         self.speed = max(0.1, self.speed - 0.1)
@@ -193,6 +202,19 @@ class MainWindow(QMainWindow, Ui_MainWindow):
             self.display_message(f"Playback speed increased to {self.speed:.2f}x.")
 
 
+    def set_video_mode(self, mode):
+        if self.cap is not None:
+            if mode == 'grayscale':
+                self.cap.set(cv2.CAP_PROP_CONVERT_RGB, 0)
+                print('GrayScale')
+            elif mode == 'blackwhite':
+                self.cap.set(cv2.CAP_PROP_CONVERT_RGB, 0)
+                self.cap.set(cv2.CAP_PROP_MONOCHROME, 1)
+                print('blackwhite')
+            elif mode == 'normal':
+                self.cap.set(cv2.CAP_PROP_CONVERT_RGB, 1)
+                self.cap.set(cv2.CAP_PROP_MONOCHROME, 0)
+                print('normal')
 
 
     def display_message(self, message):
