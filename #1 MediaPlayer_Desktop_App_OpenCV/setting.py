@@ -14,7 +14,7 @@ from setting_ui import Ui_MainWindow  # Import the generated class
 # from main import MainWindow  # Import the generated class
 
 class SettingWindow(QMainWindow, Ui_MainWindow):
-    def __init__(self, main_window):
+    def __init__(self, main_window,video_info):
         super(SettingWindow, self).__init__()
         # Set up the user interface from the generated class
         self.setupUi(self)
@@ -34,6 +34,10 @@ class SettingWindow(QMainWindow, Ui_MainWindow):
         self.btnNormal.clicked.connect(self.showNormal)
         self.btnGrayScale.clicked.connect(self.showGrayScale)
         self.btnBlackWhite.clicked.connect(self.showBlackWhite)
+        self.process_video_info(video_info)
+    def process_video_info(self, video_info):
+            
+        self.lblInformation.setText(video_info)
 
     
     def showNormal(self):

@@ -67,11 +67,15 @@ class MainWindow(QMainWindow, Ui_MainWindow):
 
         self.btnSetting.clicked.connect(self.settingWindow)
 
+        # Video information
+        self.video_info = None
        
     def settingWindow(self):
-        print('Ali')
-        self.setting_window = SettingWindow(self)
-        self.setting_window.show()
+        if self.video_info:
+           self.setting_window = SettingWindow(self, self.video_info)
+           self.setting_window.show()
+        else:
+           print("No video loaded. Cannot open settings window.")
 
     def update_progress_bar(self):
         if self.cap is not None and self.cap.isOpened():
@@ -79,7 +83,6 @@ class MainWindow(QMainWindow, Ui_MainWindow):
             current_frame = self.cap.get(cv2.CAP_PROP_POS_FRAMES)
             progress_percentage = (current_frame / total_frames) * 100
             self.videoPrograssBar.setValue(progress_percentage)
-  
     def open_file_dialog(self):
         options = QFileDialog.Options()
         file_name, _ = QFileDialog.getOpenFileName(self, "Open Video File", "", "Video Files (*.mp4 *.avi *.mov *.mkv *.wmv)", options=options)
@@ -96,6 +99,16 @@ class MainWindow(QMainWindow, Ui_MainWindow):
                 total_seconds = total_frames / fps
                 total_time = str(timedelta(seconds=total_seconds))
                 self.lblTotalTime.setText(total_time)
+
+            # Store video information
+            if self.cap is not None and self.cap.isOpened():
+                height = int(self.cap.get(cv2.CAP_PROP_FRAME_HEIGHT))
+                width = int(self.cap.get(cv2.CAP_PROP_FRAME_WIDTH))
+                fps = int(self.cap.get(cv2.CAP_PROP_FPS))
+                frame_count = int(self.cap.get(cv2.CAP_PROP_FRAME_COUNT))
+                duration_sec = frame_count / fps
+                duration_str = str(timedelta(seconds=duration_sec))
+                self.video_info = f"Height: {height}\nWidth: {width}\nFPS: {fps}\nFrame Count: {frame_count}\nDuration: {duration_str}"
 
   
     def play_video(self):
@@ -206,15 +219,12 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         if self.cap is not None:
             if mode == 'grayscale':
                 self.cap.set(cv2.CAP_PROP_CONVERT_RGB, 0)
-                print('GrayScale')
             elif mode == 'blackwhite':
                 self.cap.set(cv2.CAP_PROP_CONVERT_RGB, 0)
                 self.cap.set(cv2.CAP_PROP_MONOCHROME, 1)
-                print('blackwhite')
             elif mode == 'normal':
                 self.cap.set(cv2.CAP_PROP_CONVERT_RGB, 1)
                 self.cap.set(cv2.CAP_PROP_MONOCHROME, 0)
-                print('normal')
 
 
     def display_message(self, message):

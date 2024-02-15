@@ -1301,7 +1301,7 @@ font: 75 12pt &quot;Century Gothic&quot;;</string>
                             <string notr="true">color:white;</string>
                            </property>
                            <property name="text">
-                            <string>TextLabel</string>
+                            <string/>
                            </property>
                           </widget>
                          </item>
