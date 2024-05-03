@@ -1,17 +1,6 @@
-# -*- coding: utf-8 -*-
-"""
-Created on Wed Feb 14 19:54:31 2024
-
-@author: Digital Zone
-"""
-
-import sys
-import cv2
-from PyQt5.QtWidgets import QApplication, QMainWindow, QFileDialog, QSizePolicy, QLabel, QProgressBar
-from PyQt5.QtCore import Qt, QTimer
-from PyQt5.QtGui import QPixmap, QImage, QIcon
+from PyQt5.QtWidgets import QMainWindow
+from PyQt5.QtCore import Qt
 from setting_ui import Ui_MainWindow  # Import the generated class
-# from main import MainWindow  # Import the generated class
 
 class SettingWindow(QMainWindow, Ui_MainWindow):
     def __init__(self, main_window,video_info):

@@ -436,7 +436,7 @@ class Ui_MainWindow(object):
 "    border-left-style: solid;\n"
 "    border-top-right-radius: 3px;\n"
 "    border-bottom-right-radius: 3px;    \n"
-"    background-image: url(:/icons/images/icons/cil-arrow-bottom.png);\n"
+"    background-image: url(:/images/images/icons/drop-down.png);\n"
 "    background-position: center;\n"
 "    background-repeat: no-reperat;\n"
 " }\n"

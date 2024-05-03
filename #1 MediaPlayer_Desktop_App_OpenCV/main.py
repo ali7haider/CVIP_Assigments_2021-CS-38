@@ -78,6 +78,19 @@ class MainWindow(QMainWindow, Ui_MainWindow):
         else:
            print("No video loaded. Cannot open settings window.")
 
+    def set_video_mode(self, mode):
+        if self.cap is not None:
+            print("Mode:", mode)  # Print the received mode
+            if mode == 'grayscale':
+                self.cap.set(cv2.CAP_PROP_CONVERT_RGB, 0)
+            elif mode == 'blackwhite':
+                self.cap.set(cv2.CAP_PROP_CONVERT_RGB, 0)
+                self.cap.set(cv2.CAP_PROP_MONOCHROME, 1)
+            elif mode == 'normal':
+                self.cap.set(cv2.CAP_PROP_CONVERT_RGB, 1)
+                self.cap.set(cv2.CAP_PROP_MONOCHROME, 0)
+
+
     def update_progress_bar(self):
         if self.cap is not None and self.cap.isOpened():
             total_frames = self.cap.get(cv2.CAP_PROP_FRAME_COUNT)
@@ -233,18 +246,7 @@ class MainWindow(QMainWindow, Ui_MainWindow):
             self.display_message(f"Playback speed increased to {self.speed:.2f}x.")
 
 
-    def set_video_mode(self, mode):
-        if self.cap is not None:
-            if mode == 'grayscale':
-                self.cap.set(cv2.CAP_PROP_CONVERT_RGB, 0)
-            elif mode == 'blackwhite':
-                self.cap.set(cv2.CAP_PROP_CONVERT_RGB, 0)
-                self.cap.set(cv2.CAP_PROP_MONOCHROME, 1)
-            elif mode == 'normal':
-                self.cap.set(cv2.CAP_PROP_CONVERT_RGB, 1)
-                self.cap.set(cv2.CAP_PROP_MONOCHROME, 0)
-
-
+    
     def display_message(self, message):
         self.message.setText(message)
         QTimer.singleShot(10000, self.clear_message)
