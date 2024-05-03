@@ -1,3 +1,4 @@
+import math
 import sys
 import cv2
 from PyQt5.QtWidgets import QApplication, QMainWindow, QFileDialog, QSizePolicy, QLabel, QProgressBar
@@ -82,70 +83,87 @@ class MainWindow(QMainWindow, Ui_MainWindow):
             total_frames = self.cap.get(cv2.CAP_PROP_FRAME_COUNT)
             current_frame = self.cap.get(cv2.CAP_PROP_POS_FRAMES)
             progress_percentage = (current_frame / total_frames) * 100
+
+            # Check if the decimal part of progress_percentage is less than 0.5
+            if progress_percentage % 1 < 0.5:
+                progress_percentage = math.floor(progress_percentage)
+            else:
+                progress_percentage = math.ceil(progress_percentage)
+
             self.videoPrograssBar.setValue(progress_percentage)
     def open_file_dialog(self):
         options = QFileDialog.Options()
         file_name, _ = QFileDialog.getOpenFileName(self, "Open Video File", "", "Video Files (*.mp4 *.avi *.mov *.mkv *.wmv)", options=options)
         if file_name:
-            self.video_file_path = file_name
-            self.txtBrowsePath.setText(file_name)
-            self.play_video()
-            self.display_message("Video loaded successfully.")
+            try:
+                self.video_file_path = file_name
+                self.txtBrowsePath.setText(file_name)
+                self.play_video()
+                self.display_message("Video loaded successfully.")
 
-            # Get total duration of the video
-            if self.cap is not None and self.cap.isOpened():
-                total_frames = self.cap.get(cv2.CAP_PROP_FRAME_COUNT)
-                fps = self.cap.get(cv2.CAP_PROP_FPS)
-                total_seconds = total_frames / fps
-                total_time = str(timedelta(seconds=total_seconds))
-                self.lblTotalTime.setText(total_time)
+                # Get total duration of the video
+                if self.cap is not None and self.cap.isOpened():
+                    total_frames = self.cap.get(cv2.CAP_PROP_FRAME_COUNT)
+                    fps = self.cap.get(cv2.CAP_PROP_FPS)
+                    total_seconds = total_frames / fps
+                    total_time = str(timedelta(seconds=total_seconds))
+                    self.lblTotalTime.setText(total_time)
 
-            # Store video information
-            if self.cap is not None and self.cap.isOpened():
-                height = int(self.cap.get(cv2.CAP_PROP_FRAME_HEIGHT))
-                width = int(self.cap.get(cv2.CAP_PROP_FRAME_WIDTH))
-                fps = int(self.cap.get(cv2.CAP_PROP_FPS))
-                frame_count = int(self.cap.get(cv2.CAP_PROP_FRAME_COUNT))
-                duration_sec = frame_count / fps
-                duration_str = str(timedelta(seconds=duration_sec))
-                self.video_info = f"Height: {height}\nWidth: {width}\nFPS: {fps}\nFrame Count: {frame_count}\nDuration: {duration_str}"
+                # Store video information
+                if self.cap is not None and self.cap.isOpened():
+                    height = int(self.cap.get(cv2.CAP_PROP_FRAME_HEIGHT))
+                    width = int(self.cap.get(cv2.CAP_PROP_FRAME_WIDTH))
+                    fps = int(self.cap.get(cv2.CAP_PROP_FPS))
+                    frame_count = int(self.cap.get(cv2.CAP_PROP_FRAME_COUNT))
+                    duration_sec = frame_count / fps
+                    duration_str = str(timedelta(seconds=duration_sec))
+                    self.video_info = f"Height: {height}\nWidth: {width}\nFPS: {fps}\nFrame Count: {frame_count}\nDuration: {duration_str}"
+            except Exception as e:
+                print("Error:", e)
+
 
   
     def play_video(self):
-        if self.video_file_path is not None:
-            self.cap = cv2.VideoCapture(self.video_file_path)
-            if not self.cap.isOpened():
-                print("Error: Unable to open video file")
-                return
+        try:
+            if self.video_file_path is not None:
+                self.cap = cv2.VideoCapture(self.video_file_path)
+                if not self.cap.isOpened():
+                    print("Error: Unable to open video file")
+                    return
 
-            # Start the timer to update the frame
-            self.timer.start(33)  # Update frame every ~33 milliseconds (about 30 frames per second)
+                # Start the timer to update the frame
+                self.timer.start(33)  # Update frame every ~33 milliseconds (about 30 frames per second)
+        except Exception as e:
+            print("Error in play_video:", e)
 
     def update_frame(self):
-        if self.cap is None or not self.cap.isOpened():
-            return
-    
-        ret, frame = self.cap.read()
-        if ret:
-            # Convert the frame to QPixmap
-            pixmap = self.convert_cv_to_pixmap(frame)
-    
-            # Scale the QPixmap to fit the QLabel while maintaining aspect ratio
-            scaled_pixmap = pixmap.scaled(self.videoLabel.size(), Qt.KeepAspectRatio, Qt.SmoothTransformation)
-    
-            # Set the scaled QPixmap to the QLabel
-            self.videoLabel.setPixmap(scaled_pixmap)
-    
-            # Update progress bar
-            self.update_progress_bar()
-    
-            # Update running time
-            if self.cap.isOpened():
-                current_frame = self.cap.get(cv2.CAP_PROP_POS_FRAMES)
-                fps = self.cap.get(cv2.CAP_PROP_FPS)
-                current_seconds = current_frame / fps
-                current_time = str(timedelta(seconds=current_seconds)).split('.', 1)[0]  # Remove milliseconds
-                self.lblRunningTime.setText(current_time)
+        try:
+            if self.cap is None or not self.cap.isOpened():
+                return
+
+            ret, frame = self.cap.read()
+            if ret:
+                # Convert the frame to QPixmap
+                pixmap = self.convert_cv_to_pixmap(frame)
+
+                # Scale the QPixmap to fit the QLabel while maintaining aspect ratio
+                scaled_pixmap = pixmap.scaled(self.videoLabel.size(), Qt.KeepAspectRatio, Qt.SmoothTransformation)
+
+                # Set the scaled QPixmap to the QLabel
+                self.videoLabel.setPixmap(scaled_pixmap)
+
+                # Update progress bar
+                self.update_progress_bar()
+
+                # Update running time
+                if self.cap.isOpened():
+                    current_frame = self.cap.get(cv2.CAP_PROP_POS_FRAMES)
+                    fps = self.cap.get(cv2.CAP_PROP_FPS)
+                    current_seconds = current_frame / fps
+                    current_time = str(timedelta(seconds=current_seconds)).split('.', 1)[0]  # Remove milliseconds
+                    self.lblRunningTime.setText(current_time)
+        except Exception as e:
+            print("Error in update_frame:", e)
 
 
     def convert_cv_to_pixmap(self, frame):
